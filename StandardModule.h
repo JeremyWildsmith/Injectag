@@ -1,60 +1,143 @@
 #pragma once
 
 #include "ChainedModule.h"
-#include "ShiftRegister.h"
+#include "BitShiftStream.h"
 
 namespace Injectag
 {
 
 class StandardModule : public ChainedModule
 {
-protected:
-    struct PinType
+public:
+	class BoundaryDriver;
+
+    struct CellType
     {
         enum e
         {
             Input,
             Output,
-            TristateOutput,
-            InputOutput,
+			InputOutput,
+            DriveControl,
+			InternalOrIgnore,
         };
     };
 
-    class BsrMapEntry
+	struct PinAssignment
+	{
+		enum e
+		{
+			High,
+			Low,
+			HighZ,
+			Input,
+		};
+	};
+
+	struct StandardOperation
+	{
+		enum e
+		{
+			Bypass,
+			Sample,
+			Extest,
+			Intest,
+			Last //For enum inheritance
+		};
+	};
+
+    class BsrCell
     {
-    public:
-        BsrMapEntry(const int inputIndex);
-        BsrMapEntry(const int outputIndex, const int controlIndex);
-        BsrMapEntry(const int inputIndex, const int outputIndex, const int controlIndex);
+	public:
+		BsrCell(const int pin, const CellType::e cellType, const int bsrControlBit = -1, const bool isValueInverted = false, const bool isControlInverted = false);
+		BsrCell(const int pin, const CellType::e cellType, const bool isValueInverted, const bool isControlInverted = false);
+		BsrCell();
+        
+		BsrCell& operator=(const BsrCell& rhs);
 
-        void overlay(ShiftRegister& bsrRegister) const;
+	protected:
+		bool isControlled() const;
 
-        void setControl(const bool control);
-        void setIoState(const bool ioState);
-        bool getIoState() const;
+		CellType::e getCellType() const;
 
-        PinType::e getType() const;
+		//Returns -1 if pin is internal.
+		int getPin() const;
 
-    private:
-        const PinType::e m_pinType;
-        const int m_controlIndex;
-        const int m_inputIndex;
-        const int m_outputIndex;
+		//Returns -1 if not controlled.
+		int getControlBit() const;
 
-        bool m_ioState;
-        bool m_controlState;
+		bool isValueActive() const;
+		void setValueActive(const bool value);
+
+		bool isControlActive() const;
+		void setControlActive(const bool control);
+
+		bool getBit() const;
+        void setBit(const bool value);
+	private:
+		int m_pin;
+
+		CellType::e m_cellType;
+
+		bool m_isControlInverted;
+		bool m_isValueInverted;
+
+		bool m_value;
+
+		int m_bsrControlBit;
+
+		friend class BoundaryDriver;
     };
 
-    StandardModule(const int irSize, BsrMapEntry* const bsrMap, const int bsrMapSize);
-    virtual ~StandardModule();
+	class BoundaryDriver
+	{
+	public:
+		BoundaryDriver(BsrCell* const cells, const int size);
 
-    void samplePins();
-    void externTestPins();
-    void internTestPins();
+		//Returns false if configuration failed due to missing cells.
+		bool assignPin(const int pin, const PinAssignment::e value);
 
-    virtual void loadExternTest(ShiftRegister& irRegister) = 0;
-    virtual void loadInternTest(ShiftRegister& irRegister) = 0;
-    virtual void loadSample(ShiftRegister& irRegister) = 0;
+		//Returns false if sample failed due to missing cells.
+		bool samplePin(const int pin, bool& outBuffer);
+
+		BitShiftStream& getBoundaryScanRegister();
+		
+	protected:
+		void findPin(const int pin, BsrCell*& control, BsrCell*& input, BsrCell*& output);
+
+	private:
+		class BoundaryScanRegister : public BitShiftStream
+		{
+        public:
+            BoundaryScanRegister(BoundaryDriver* const boundaryDriver);
+            virtual unsigned int getSizeBits() const;
+            
+            virtual bool peekRight() const;
+            virtual bool peekLeft() const;
+
+            virtual bool shiftRight(const bool insert);
+            virtual bool shiftLeft(const bool insert);
+
+		private:
+			BoundaryDriver* const m_boundaryDriver;
+		};
+
+		BoundaryScanRegister m_boundaryScanRegister;
+		BsrCell* const m_bsrCells;
+		const int m_bsrSize;
+
+		friend class BoundaryScanRegister;
+	};
+
+	//Returns false if operation was invalid\unsupported (defaulting to BYPASS operation), true otherwise.
+	virtual bool setOperation(const int operation) = 0;
+	
+	//Can return null if boundry driving is unsupported.
+	virtual BoundaryDriver& getBounderyDriver() const = 0;
+
+	virtual int getManufactureId() const = 0;
+	virtual int getPartNumber() const = 0;
+	virtual int getVersion() const = 0;
 };
 
 };

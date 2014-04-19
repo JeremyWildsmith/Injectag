@@ -48,6 +48,12 @@
     <ClInclude Include="StandardModule.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="D2Module.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BitShiftStream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -65,13 +71,16 @@
     <ClCompile Include="VirtualJtagHost.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ShiftRegister.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="IdentifierModule.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StandardModule.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D2Module.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BitShiftStream.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

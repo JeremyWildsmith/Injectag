@@ -77,7 +77,9 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BitShiftStream.h" />
     <ClInclude Include="ChainedModule.h" />
+    <ClInclude Include="D2Module.h" />
     <ClInclude Include="IdentifierModule.h" />
     <ClInclude Include="JtagChainLinkException.h" />
     <ClInclude Include="JtagDriver.h" />
@@ -89,12 +91,13 @@
     <ClInclude Include="VirtualJtagHost.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BitShiftStream.cpp" />
     <ClCompile Include="ChainedModule.cpp" />
-    <ClCompile Include="IdentifierModule.cpp" />
+    <ClCompile Include="D2Module.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="JtagChainLinkException.cpp" />
     <ClCompile Include="JtagDriver.cpp" />
-    <ClCompile Include="ShiftRegister.cpp" />
+    <ClCompile Include="StandardModule.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="VirtualJtagHost.cpp" />
   </ItemGroup>

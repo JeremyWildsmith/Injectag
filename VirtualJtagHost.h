@@ -12,10 +12,10 @@ public:
     VirtualJtagHost();
     virtual ~VirtualJtagHost();
 
-    void set(const InChannel::e channel, bool isHigh);
-    bool get(const OutChannel::e channel) const;
+    virtual void set(const InChannel::e channel, bool isHigh);
+    virtual bool get(const OutChannel::e channel) const;
 
-    void clock();
+    virtual void clock();
 
 private:
     struct JtagState
