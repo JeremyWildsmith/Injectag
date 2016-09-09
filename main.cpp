@@ -11,11 +11,6 @@
 
 using namespace Injectag;
 
-void fuck(int arra[])
-{
-
-}
-
 int _tmain(int argc, _TCHAR* argv[])
 {
 	typedef IdentifierModule<10, 35> IdMod;
